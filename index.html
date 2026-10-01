@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSP Sprint Board</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📌</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --surface:#E9EDF1; --panel:#FFFFFF; --ink:#1F2A37; --muted:#5B6776; --rule:#C9D1DA;
+  --marker:#2457C5; --marker-ink:#FFFFFF; --danger:#B42318; --ok:#1E7B45; --untagged:#D9DEE4;
+  --note-ink:#1F2A37;
+  --hand:'Kalam', 'Segoe Print', 'Bradley Hand', cursive;
+  --body:'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --surface:#151A21; --panel:#1E252F; --ink:#E6EAF0; --muted:#9AA6B5; --rule:#334050;
+    --marker:#8CB0FF; --marker-ink:#0F1620; --danger:#FF8F80; --ok:#72D69E; --untagged:#AEB7C2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --surface:#151A21; --panel:#1E252F; --ink:#E6EAF0; --muted:#9AA6B5; --rule:#334050;
+  --marker:#8CB0FF; --marker-ink:#0F1620; --danger:#FF8F80; --ok:#72D69E; --untagged:#AEB7C2;
+  color-scheme: dark;
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+body{ margin:0; background:var(--surface); color:var(--ink); font:16px/1.5 var(--body); }
+button,input,select,textarea{ font:inherit; color:inherit; }
+:focus-visible{ outline:3px solid var(--marker); outline-offset:2px; }
+[hidden]{ display:none !important; }
+
+/* ---------- Header ---------- */
+.top{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px 24px;
+  padding:18px clamp(14px,3vw,32px) 14px; border-bottom:2px solid var(--rule); background:var(--panel); }
+.brand h1{ margin:0; font:700 clamp(1.7rem,3.2vw,2.3rem)/1 var(--hand); letter-spacing:.2px; }
+.who{ margin:6px 0 0; color:var(--muted); font-size:.95rem; }
+.top-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.sync{ font-size:.85rem; color:var(--muted); min-width:9ch; }
+.sync.bad{ color:var(--danger); }
+
+button{ cursor:pointer; border:2px solid var(--marker); background:var(--marker); color:var(--marker-ink);
+  padding:7px 14px; border-radius:8px; font-weight:700; }
+button.ghost{ background:transparent; color:var(--marker); }
+button.small{ padding:4px 10px; font-size:.85rem; }
+button:disabled{ cursor:not-allowed; opacity:.45; }
+button.icon{ border:none; background:transparent; color:inherit; padding:2px 6px; border-radius:4px; font-weight:700; font-size:.85rem; }
+button.icon:hover:not(:disabled){ background:rgba(0,0,0,.08); }
+
+input[type=text],input[type=email],input[type=password],input[type=search],select,textarea{ width:100%; padding:8px 10px; border:1.5px solid var(--rule);
+  border-radius:8px; background:var(--panel); }
+label{ display:block; font-weight:700; font-size:.92rem; margin:12px 0 4px; }
+.hint{ color:var(--muted); font-size:.85rem; margin:6px 0 0; }
+.error{ color:var(--danger); font-size:.9rem; margin:8px 0 0; min-height:1.2em; }
+
+main{ padding:20px clamp(14px,3vw,32px) 48px; }
+.panel{ background:var(--panel); border:1.5px solid var(--rule); border-radius:12px; padding:16px 18px; }
+.panel h2{ margin:0 0 10px; font:700 1.45rem/1.1 var(--hand); }
+.panel h3{ margin:18px 0 8px; font-size:1rem; }
+.narrow{ max-width:520px; margin:6vh auto 0; }
+.narrow h2{ font-size:1.9rem; }
+.narrow button[type=submit]{ margin-top:16px; }
+.two{ display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+.check{ display:flex; align-items:center; gap:8px; font-weight:400; }
+.check input{ width:auto; }
+.preview{ max-width:900px; margin:0 auto 16px; padding:8px 12px; border:1.5px dashed var(--muted); border-radius:8px; color:var(--muted); font-size:.9rem; }
+.banner{ margin:0 0 16px; padding:10px 14px; border-radius:8px; border:1.5px solid var(--marker); border-left-width:6px; background:var(--panel); font-size:.95rem; }
+
+/* ---------- Planning row ---------- */
+.plan{ display:grid; grid-template-columns:minmax(220px,1fr) minmax(280px,1.6fr) minmax(240px,1.2fr); gap:16px; align-items:start; }
+.sprint-name{ font:700 1.35rem/1.2 var(--hand) !important; border-style:dashed !important; }
+.dates{ display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:14px 0 0; font-size:.92rem; }
+.dates dt{ color:var(--muted); }
+.dates dd{ margin:0; font-weight:700; }
+
+ul.clean{ list-style:none; margin:0; padding:0; }
+.goal{ display:flex; align-items:flex-start; gap:10px; padding:7px 0; border-bottom:1px dashed var(--rule); }
+.goal:last-child{ border-bottom:none; }
+.swatch{ flex:none; width:18px; height:18px; margin-top:3px; background:var(--c); border-radius:3px 3px 6px 3px;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.15); }
+.goal-text{ flex:1; }
+.inline-add{ display:flex; gap:8px; margin-top:10px; }
+.inline-add input{ flex:1; }
+.retro-item{ display:flex; align-items:flex-start; gap:8px; padding:5px 0; }
+.retro-item label{ flex:1; margin:0; font-weight:400; font-size:1rem; display:flex; gap:8px; align-items:flex-start; }
+.retro-item input{ width:auto; margin-top:5px; }
+.retro-item.done span{ text-decoration:line-through; color:var(--muted); }
+li.empty{ color:var(--muted); font-size:.9rem; font-style:italic; padding:6px 0; list-style:none; }
+
+/* ---------- Workflow ---------- */
+.flow-wrap{ overflow-x:auto; margin:22px -4px 0; padding:4px 4px 10px; }
+.flow{ display:grid; grid-template-columns:repeat(6,minmax(190px,1fr)); gap:12px; min-width:1180px; }
+.col{ display:flex; flex-direction:column; min-height:340px; background:var(--panel); border:1.5px solid var(--rule);
+  border-radius:12px; padding:10px 10px 12px; transition:border-color .12s; }
+.col.over{ border-color:var(--marker); border-style:dashed; }
+.col.done-col{ border-top:5px solid var(--ok); }
+.col-head{ display:flex; align-items:baseline; justify-content:space-between; margin:0 2px 8px; }
+.col-head h2{ margin:0; font:700 1.35rem/1 var(--hand); }
+.count{ font-size:.85rem; color:var(--muted); font-weight:700; }
+.col-sub{ margin:-4px 2px 10px; font-size:.8rem; color:var(--muted); }
+.cards{ list-style:none; margin:0; padding:0; flex:1; display:flex; flex-direction:column; gap:10px; }
+
+.note{ position:relative; background:var(--c); color:var(--note-ink); padding:10px 10px 6px;
+  border-radius:3px 3px 14px 3px; transform:rotate(var(--tilt));
+  box-shadow:0 1px 0 rgba(0,0,0,.10), 0 8px 12px -8px rgba(0,0,0,.45); cursor:grab; }
+.note.dragging{ opacity:.5; }
+.note-text{ margin:0 0 6px; font:400 1.08rem/1.25 var(--hand); overflow-wrap:anywhere; }
+.note-meta{ display:flex; flex-wrap:wrap; gap:4px; min-height:0; }
+.tag{ font-size:.72rem; font-weight:700; padding:1px 7px; border-radius:99px; background:rgba(255,255,255,.65); border:1px solid rgba(0,0,0,.18); }
+.note-ctrl{ display:flex; justify-content:space-between; margin-top:4px; }
+.note-ctrl .icon{ color:var(--note-ink); }
+.note-ctrl .icon:hover:not(:disabled){ background:rgba(0,0,0,.1); }
+.note-edit{ margin-top:6px; padding-top:8px; border-top:1px dashed rgba(0,0,0,.25); }
+.note-edit label{ color:var(--note-ink); font-size:.78rem; margin:6px 0 2px; }
+.note-edit textarea,.note-edit select{ background:rgba(255,255,255,.85); color:#1F2A37; font-size:.88rem; padding:5px 7px; border-color:rgba(0,0,0,.25); }
+.note-edit textarea{ resize:vertical; min-height:52px; }
+.note-edit .del{ margin-top:8px; background:transparent; border:1.5px solid #8A1C12; color:#8A1C12; padding:3px 10px; font-size:.82rem; }
+.add-card{ margin-top:12px; padding-top:10px; border-top:1.5px dashed var(--rule); display:grid; gap:6px; }
+.add-card input,.add-card select{ font-size:.9rem; padding:6px 8px; }
+.add-card button{ padding:6px 10px; font-size:.9rem; }
+
+/* ---------- Lower row ---------- */
+.lower{ display:grid; grid-template-columns:minmax(300px,1.3fr) minmax(280px,1fr); gap:16px; margin-top:22px; align-items:start; }
+.overall{ font:700 1.2rem/1.2 var(--hand); margin:0 0 10px; }
+.gp{ display:grid; grid-template-columns:18px 1fr auto; gap:4px 10px; align-items:center; padding:6px 0; }
+.gp .swatch{ margin-top:0; }
+.gp-text{ font-size:.95rem; }
+.gp-num{ font-size:.85rem; color:var(--muted); white-space:nowrap; }
+.bar{ grid-column:2 / 4; height:10px; border-radius:99px; background:var(--surface); border:1px solid var(--rule); overflow:hidden; }
+.bar > span{ display:block; height:100%; background:var(--c); border-right:1px solid rgba(0,0,0,.2); }
+.req{ display:grid; grid-template-columns:26px 1fr auto; gap:8px; align-items:start; padding:7px 0; border-bottom:1px dashed var(--rule); }
+.req:last-child{ border-bottom:none; }
+.req .mark{ width:22px; height:22px; border-radius:50%; border:2px solid var(--rule); display:grid; place-items:center; font-weight:700; font-size:.8rem; }
+.req.met .mark{ background:var(--ok); border-color:var(--ok); color:var(--panel); }
+.req.prog .mark{ border-color:var(--marker); color:var(--marker); }
+.req .state{ font-size:.8rem; color:var(--muted); white-space:nowrap; }
+.req.met .state{ color:var(--ok); font-weight:700; }
+.finish{ margin-top:16px; padding-top:14px; border-top:2px solid var(--rule); }
+.finish ul{ margin:0 0 10px; padding-left:20px; color:var(--muted); font-size:.9rem; }
+.finish .done-msg{ color:var(--ok); font-weight:700; margin:0 0 10px; }
+.asset-form{ display:grid; grid-template-columns:120px 1fr; gap:8px; }
+.asset-form .full{ grid-column:1 / -1; }
+.asset{ display:grid; grid-template-columns:auto 1fr auto; gap:2px 10px; padding:8px 0; border-bottom:1px dashed var(--rule); }
+.asset .tag{ align-self:start; background:var(--surface); }
+.asset-src{ grid-column:2; color:var(--muted); font-size:.88rem; overflow-wrap:anywhere; }
+.asset-src a{ color:var(--marker); }
+
+/* ---------- Read-only board (teacher viewing a student) ---------- */
+.readonly #goalForm,.readonly #retroForm,.readonly #assetForm,.readonly .add-card,.readonly .finish,
+.readonly .note-ctrl,.readonly .goal .icon,.readonly .retro-item .icon,.readonly .asset .icon{ display:none !important; }
+.readonly .note{ cursor:default; }
+
+/* ---------- Teacher view ---------- */
+.t-head{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px; }
+.t-head h2{ margin:0; }
+.t-actions{ display:flex; flex-wrap:wrap; gap:8px; }
+.demo-line{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:14px 0 0; padding:10px 12px;
+  border:1.5px dashed var(--rule); border-radius:8px; font-size:.92rem; }
+.demo-line span{ flex:1 1 260px; }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 12px; }
+.chip{ border:1.5px solid var(--rule); background:var(--panel); color:var(--ink); padding:5px 12px; border-radius:99px; font-size:.88rem; }
+.chip[aria-pressed="true"]{ border-color:var(--marker); background:var(--marker); color:var(--marker-ink); }
+.filters{ display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:8px; }
+.filters label{ margin:0; font-size:.85rem; }
+.filters select,.filters input{ display:block; width:auto; min-width:170px; margin-top:4px; font-weight:400; }
+.t-count{ color:var(--muted); font-size:.85rem; margin:0 0 6px; }
+.table-wrap{ overflow-x:auto; }
+table.roster{ width:100%; min-width:1060px; border-collapse:collapse; font-size:.92rem; }
+.roster th,.roster td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--rule); vertical-align:top; }
+.roster th{ font-size:.85rem; color:var(--muted); white-space:nowrap; }
+.roster th button{ border:none; background:none; color:inherit; padding:0; border-radius:4px; font-weight:700; }
+.roster th[aria-sort="ascending"] button::after{ content:' ▲'; }
+.roster th[aria-sort="descending"] button::after{ content:' ▼'; }
+.roster tbody tr:hover{ background:var(--surface); }
+.roster td.num{ white-space:nowrap; }
+.sub{ display:block; color:var(--muted); font-size:.8rem; }
+.badge{ display:inline-block; padding:1px 9px; border-radius:99px; font-size:.8rem; font-weight:700; border:1.5px solid var(--rule); white-space:nowrap; }
+.badge.s-finished{ background:var(--ok); border-color:var(--ok); color:var(--panel); }
+.badge.s-progress{ border-color:var(--marker); color:var(--marker); }
+.badge.s-notstarted{ color:var(--muted); }
+.badge.s-notopened{ color:var(--muted); border-style:dashed; }
+.quiet{ display:block; margin-top:4px; font-size:.8rem; color:var(--danger); font-weight:700; }
+
+.toast{ position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%);
+  background:var(--ink); color:var(--panel); padding:10px 16px; border-radius:8px; font-weight:700; max-width:90vw;
+  opacity:0; pointer-events:none; transition:opacity .2s; }
+.toast.show{ opacity:1; }
+
+@media (max-width:980px){ .plan,.lower{ grid-template-columns:1fr; } }
+@media (max-width:520px){ .two{ grid-template-columns:1fr; } .asset-form{ grid-template-columns:1fr; } }
+@media (prefers-reduced-motion:reduce){ .toast,.col{ transition:none; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <h1>CSP Sprint Board</h1>
+    <p class="who" id="who">Create Performance Task, first iteration</p>
+  </div>
+  <div class="top-actions" id="topActions" hidden>
+    <span class="sync" id="sync" aria-live="polite"></span>
+    <button class="ghost" id="backBtn" type="button">Back to class list</button>
+    <button class="ghost" id="editInfoBtn" type="button">Edit my info</button>
+    <button class="ghost" id="switchBtn" type="button">Switch student</button>
+    <button class="ghost" id="signoutBtn" type="button">Sign out</button>
+    <button id="commitBtn" type="button">Commit update</button>
+  </div>
+</header>
+
+<main>
+  <p class="preview" id="previewNote" hidden>Preview mode: nothing is saved and no emails are sent. Paste your Apps Script URL into <code>API_URL</code> to go live.</p>
+
+  <!-- Sign in -->
+  <section id="signin" class="panel narrow">
+    <h2>Open your board</h2>
+    <form id="signinForm" novalidate>
+      <label for="emailIn">School email</label>
+      <input id="emailIn" type="email" inputmode="email" autocomplete="email" placeholder="123456789@lbschools.net" aria-describedby="emailHint">
+      <p class="hint" id="emailHint">Your 9-digit student ID, then @lbschools.net. Personal email addresses won't work.</p>
+      <div id="codeWrap" hidden>
+        <label for="codeIn">Teacher passcode</label>
+        <input id="codeIn" type="password" autocomplete="current-password">
+      </div>
+      <p class="error" id="signinErr" role="alert"></p>
+      <button type="submit" id="signinBtn">Open my board</button>
+    </form>
+  </section>
+
+  <!-- Student info -->
+  <section id="info" class="panel narrow" hidden>
+    <h2>About you</h2>
+    <p class="hint">Your teacher uses this to match your board, your partner, and your review group.</p>
+    <form id="infoForm" novalidate>
+      <div class="two">
+        <div><label for="firstIn">First name</label><input id="firstIn" type="text" maxlength="40" autocomplete="given-name"></div>
+        <div><label for="lastIn">Last name</label><input id="lastIn" type="text" maxlength="40" autocomplete="family-name"></div>
+      </div>
+      <label for="emailOut">School email</label>
+      <input id="emailOut" type="text" readonly>
+      <label for="periodIn">Class period</label>
+      <select id="periodIn"></select>
+      <div id="partnerWrap"></div>
+      <p class="error" id="infoErr" role="alert"></p>
+      <button type="submit" id="infoBtn">Save and open board</button>
+    </form>
+  </section>
+
+  <!-- Teacher view -->
+  <section id="teacher" hidden>
+    <div class="panel">
+      <div class="t-head">
+        <h2>Class list</h2>
+        <div class="t-actions">
+          <button class="ghost" id="refreshBtn" type="button">Refresh</button>
+        </div>
+      </div>
+      <div class="demo-line">
+        <span id="demoInfo"></span>
+        <button class="small" id="demoOpenBtn" type="button">Open demo board</button>
+        <button class="ghost small" id="demoResetBtn" type="button">Clear demo board</button>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Filter by status"></div>
+      <div class="filters">
+        <label for="fPeriod">Period<select id="fPeriod"></select></label>
+        <label for="fSearch">Find a student<input id="fSearch" type="search" placeholder="Name or ID"></label>
+      </div>
+      <p class="t-count" id="tCount" aria-live="polite"></p>
+      <div class="table-wrap">
+        <table class="roster">
+          <thead><tr id="tHead"></tr></thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Board -->
+  <section id="board" hidden>
+    <p class="banner" id="boardBanner" hidden></p>
+    <div class="plan">
+      <div class="panel">
+        <label for="sprintIn" style="margin-top:0">Sprint</label>
+        <input id="sprintIn" class="sprint-name" type="text" maxlength="60">
+        <dl class="dates" id="dates"></dl>
+      </div>
+
+      <div class="panel">
+        <h2>Sprint Goals</h2>
+        <ul class="clean" id="goalList"></ul>
+        <form id="goalForm" class="inline-add">
+          <input id="goalIn" type="text" maxlength="160" placeholder="What will your program do by the end of this sprint?" aria-label="New Sprint Goal">
+          <button type="submit">Add goal</button>
+        </form>
+        <p class="hint" id="goalHint">Each goal gets its own color and a starter card in Pick Me.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Retro Actions</h2>
+        <ul class="clean" id="retroList"></ul>
+        <form id="retroForm" class="inline-add">
+          <input id="retroIn" type="text" maxlength="200" placeholder="One thing you'll do differently" aria-label="New Retro Action">
+          <button type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="flow-wrap"><div class="flow" id="flow"></div></div>
+
+    <div class="lower">
+      <div class="panel">
+        <h2>Outcomes</h2>
+        <p class="overall" id="overall"></p>
+        <div id="goalProgress"></div>
+        <h3>Create PT checklist</h3>
+        <p class="hint" style="margin-top:-4px">Tag cards with a requirement. It turns green when that card reaches Done.</p>
+        <ul class="clean" id="reqList"></ul>
+        <div class="finish">
+          <p class="done-msg" id="doneMsg" hidden></p>
+          <ul id="finishReasons"></ul>
+          <button id="finishBtn" type="button">Finish sprint</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Assets &amp; Sources</h2>
+        <p class="hint" style="margin:-4px 0 12px">Log every image, dataset, sound, or piece of code you didn't write, and where it came from. The Create PT requires you to credit these.</p>
+        <form id="assetForm" class="asset-form">
+          <select id="assetType" aria-label="Asset type"></select>
+          <input id="assetDesc" type="text" maxlength="200" placeholder="What is it?" aria-label="Asset description">
+          <input id="assetSrc" class="full" type="text" maxlength="300" placeholder="Where it came from (link or credit), or &quot;I made this&quot;" aria-label="Asset source">
+          <button type="submit" class="full">Add asset</button>
+        </form>
+        <ul class="clean" id="assetList" style="margin-top:10px"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   SETUP: paste your Apps Script web app URL (ends in /exec) here.
+   Leave it empty to preview the board without saving anything.
+   ===================================================================== */
+const API_URL = '';
+
+const EMAIL_RE = /^\d{9}@lbschools\.net$/;
+// Teacher addresses start with a letter (first initial + last name, sometimes with a number).
+const TEACHER_RE = /^[a-z][a-z0-9._-]*@lbschools\.net$/;
+const QUIET_DAYS = 5;   // flag an in-progress board with no updates for this many days
+
+const COLUMNS = [
+  { id:'pick',   name:'Pick Me', sub:'Ready to start',       empty:'Add a card below, or break a goal into smaller cards.' },
+  { id:'dev',    name:'Dev',     sub:'Building it',          empty:'Drag a card here when you start coding it.' },
+  { id:'test',   name:'Test',    sub:'Checking it works',    empty:'Run it. Does it do what the card says?' },
+  { id:'review', name:'Review',  sub:'Peer looks it over',   empty:'Ready for a classmate to review.' },
+  { id:'deploy', name:'Deploy',  sub:'Into the final program', empty:'Merging into your final program.' },
+  { id:'done',   name:'Done',    sub:'Finished and working', empty:'Nothing finished yet.' }
+];
+const PALETTE = ['#F7D84B','#6FD0E0','#F59AC2','#8FD694','#F9A95B','#B9A2F0'];
+const REQS = [
+  { id:'input',     short:'Input',          label:'Takes input (user, device, data stream, or file)' },
+  { id:'output',    short:'Output',         label:'Produces output based on input and program functionality' },
+  { id:'list',      short:'List',           label:'Uses a list or other collection to manage complexity' },
+  { id:'procedure', short:'Procedure',      label:'Has a procedure you wrote with at least one parameter' },
+  { id:'algorithm', short:'Algorithm',      label:'That procedure uses sequencing, selection, and iteration' },
+  { id:'call',      short:'Procedure call', label:'Your program calls that procedure' }
+];
+const ASSET_TYPES = ['Image','Data','Sound','Code','Other'];
+const STATUSES = ['Not opened','Not started','In progress','Finished'];
+const DEFAULT_WHO = 'Create Performance Task, first iteration';
+
+const $ = s => document.querySelector(s);
+function el(tag, attrs = {}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)){
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v === true) e.setAttribute(k, '');
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); });
+  return e;
+}
+const uid = () => Math.random().toString(36).slice(2, 10);
+const blankBoard = () => ({ sprint:'Sprint 1', goals:[], cards:[], retro:[], assets:[] });
+const fmtDate = x => x ? new Date(x).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) : '—';
+const fmtShort = x => x ? new Date(x).toLocaleDateString(undefined, { month:'short', day:'numeric' }) : '—';
+
+const state = {
+  email:'', student:null, board:blankBoard(),
+  meta:{ periods:[], classmates:[], rosterMode:false, demo:false },
+  dates:{ start:null, end:null, days:null, status:'Not started' },
+  editing:null, saveTimer:null, dirty:false,
+  readonly:false,   // true when the teacher is looking at a student's board
+  teacher:null      // set after teacher sign-in
+};
+
+/* ---------------- Validation ---------------- */
+function emailProblem(v){
+  if (!v) return 'Enter your school email.';
+  if (!v.includes('@')) return 'Add @lbschools.net after your student ID.';
+  const [user, domain] = v.split('@');
+  if (domain !== 'lbschools.net') return "Use your @lbschools.net school address. Personal email addresses won't work.";
+  if (!/^\d+$/.test(user)) return 'The part before @ should be your student ID, digits only.';
+  if (user.length !== 9) return `Your student ID should be 9 digits. You entered ${user.length}.`;
+  return '';
+}
+const isTeacherEmail = v => TEACHER_RE.test(v);
+const infoComplete = s => !!(s && s.first && s.last && s.period && s.partner);
+
+function finishReasons(b, s){
+  const r = [];
+  if (!infoComplete(s)) r.push('Fill in your info (name, period, partner).');
+  if (!b.goals.length) r.push('Add at least one Sprint Goal.');
+  const empty = b.goals.filter(g => !b.cards.some(c => c.goalId === g.id));
+  if (empty.length) r.push(`Give every goal at least one card (missing: ${empty.map(g => g.text).join('; ')}).`);
+  if (!b.cards.length) r.push('Add at least one card.');
+  const open = b.cards.filter(c => c.col !== 'done').length;
+  if (open) r.push(`Move ${open} more card${open === 1 ? '' : 's'} to Done.`);
+  return r;
+}
+function boardStats(b){
+  return {
+    done: b.cards.filter(c => c.col === 'done').length,
+    total: b.cards.length,
+    cpt: REQS.filter(r => b.cards.some(c => c.req === r.id && c.col === 'done')).length,
+    retroDone: b.retro.filter(r => r.done).length,
+    retroTotal: b.retro.length
+  };
+}
+
+/* ---------------- Server ---------------- */
+async function post(body){
+  if (!API_URL) return previewApi(body.action, body);
+  let lastErr;
+  for (let i = 0; i < 2; i++){
+    try{
+      const res = await fetch(API_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+      const j = await res.json();
+      if (!j.ok){ const e = new Error(j.error || 'Something went wrong.'); e.server = true; throw e; }
+      return j;
+    }catch(e){
+      lastErr = e;
+      if (e.server) break;
+      await new Promise(r => setTimeout(r, 1200));
+    }
+  }
+  if (!lastErr.server) lastErr.message = "Couldn't reach the board server. Check your connection and try again.";
+  throw lastErr;
+}
+const api  = (action, payload = {}) => post({ action, email: state.email, ...payload });
+const tapi = (action, payload = {}) => post({ action, email: state.teacher.email, code: state.teacher.code, ...payload });
+
+/* ---------------- Preview mode (no API_URL): mirrors the server in memory ---------------- */
+const PREVIEW_DEMO = '000000000@lbschools.net';
+const PREVIEW_PARTNERS = [
+  { key:'demo-a', name:'Sample Partner A', period:'1' },
+  { key:'demo-b', name:'Sample Partner B', period:'2' },
+  { key:'demo-c', name:'Sample Partner C', period:'1' }
+];
+const previewStore = {};
+const serverError = m => Object.assign(new Error(m), { server:true });
+function daysBetween(a, b){
+  const d0 = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+  const d1 = new Date(b.getFullYear(), b.getMonth(), b.getDate());
+  return Math.round((d1 - d0) / 864e5) + 1;
+}
+function previewDates(rec){
+  const s = rec.start ? new Date(rec.start) : null, e = rec.end ? new Date(rec.end) : null;
+  return { start:rec.start, end:rec.end, days: s ? daysBetween(s, e || new Date()) : null,
+           status: !s ? 'Not started' : e ? 'Finished' : 'In progress' };
+}
+function previewApi(action, p){
+  if (action.startsWith('teacher')) return previewTeacher(action, p);
+  if (!EMAIL_RE.test(p.email)) throw serverError('Use your school email: your 9-digit student ID followed by @lbschools.net.');
+  const isDemo = p.email === PREVIEW_DEMO;
+  const rec = previewStore[p.email] ||= {
+    student: isDemo ? { email:p.email, first:'Demo', last:'Student', period:'1', partner:'', partnerName:'' }
+                    : { email:p.email, first:'', last:'', period:'', partner:'', partnerName:'' },
+    board:null, start:null, end:null, updated:null };
+  if (action === 'load') return { ok:true, student:rec.student, board:rec.board, periods:['1','2'],
+    classmates: isDemo ? PREVIEW_PARTNERS : [], rosterMode:isDemo, demo:isDemo, dates:previewDates(rec) };
+  const partnerName = isDemo ? ((PREVIEW_PARTNERS.find(x => x.key === p.student.partner) || {}).name || '') : '';
+  rec.student = { ...p.student, email:p.email, partnerName };
+  rec.board = JSON.parse(JSON.stringify(p.board));
+  rec.updated = new Date().toISOString();
+  if (!rec.start && infoComplete(rec.student) && rec.board.goals.length) rec.start = new Date().toISOString();
+  const reasons = finishReasons(rec.board, rec.student);
+  if (rec.end && reasons.length) rec.end = null;
+  if (action === 'finish'){
+    if (reasons.length) throw serverError('Not ready to finish yet. ' + reasons.join(' '));
+    if (!rec.end) rec.end = new Date().toISOString();
+  }
+  return { ok:true, student:rec.student, dates:previewDates(rec) };
+}
+function previewSummary(rec){
+  const s = rec.student, b = rec.board || blankBoard(), d = previewDates(rec), st = boardStats(b);
+  return { email:s.email, first:s.first, last:s.last, period:s.period,
+    partner: s.partner === 'none' ? 'Working solo' : (s.partnerName || s.partner || ''),
+    status:d.status, start:d.start, end:d.end, days:d.days,
+    cardsDone:st.done, cardsTotal:st.total, cpt:st.cpt, retroDone:st.retroDone, retroTotal:st.retroTotal, lastUpdated:rec.updated, opened:true };
+}
+function previewTeacher(action, p){
+  if (!p.code) throw serverError('Enter your teacher passcode.');
+  if (action === 'teacherList'){
+    const students = Object.values(previewStore).filter(r => r.student.email !== PREVIEW_DEMO).map(previewSummary);
+    const d = previewStore[PREVIEW_DEMO];
+    return { ok:true, periods:['1','2'], students, demo: d ? previewSummary(d) : null, demoEmail:PREVIEW_DEMO };
+  }
+  if (action === 'teacherBoard'){
+    const rec = previewStore[p.student];
+    if (!rec) throw serverError("That student hasn't opened a board yet.");
+    const s = rec.student;
+    return { ok:true, student:{ ...s, partnerName: s.partnerName || (s.partner !== 'none' ? s.partner : '') },
+      board: rec.board || blankBoard(), dates: previewDates(rec) };
+  }
+  if (action === 'teacherResetDemo'){ delete previewStore[PREVIEW_DEMO]; return { ok:true }; }
+  throw serverError('Unknown action.');
+}
+
+/* ---------------- Saving ---------------- */
+function setSync(text, bad){ const s = $('#sync'); s.textContent = text; s.classList.toggle('bad', !!bad); }
+function scheduleSave(){
+  if (state.readonly) return;
+  state.dirty = true; setSync('Unsaved changes');
+  clearTimeout(state.saveTimer);
+  state.saveTimer = setTimeout(saveNow, 1000);
+}
+async function saveNow(throwOnError){
+  clearTimeout(state.saveTimer);
+  if (state.readonly) return;
+  state.dirty = false; setSync('Saving…');
+  try{
+    const j = await api('save', { student:state.student, board:state.board });
+    applyServer(j); setSync(API_URL ? 'Saved' : 'Preview');
+  }catch(e){
+    state.dirty = true;
+    if (e.server) setSync(e.message, true);
+    else { setSync("Couldn't save. Retrying…", true); state.saveTimer = setTimeout(saveNow, 6000); }
+    if (throwOnError) throw e;
+  }
+}
+function applyServer(j){
+  if (j.student) state.student = { ...state.student, ...j.student };
+  if (j.dates) state.dates = j.dates;
+  renderHeader(); renderDates(); renderFinish();
+}
+function mutate(fn){ if (state.readonly) return; fn(state.board); renderBoard(); scheduleSave(); }
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ---------------- Screens ---------------- */
+function show(id){
+  ['signin','info','board','teacher'].forEach(x => { $('#' + x).hidden = x !== id; });
+  const ro = state.readonly, t = !!state.teacher;
+  const editing = (id === 'board' || id === 'info') && !ro;
+  $('#topActions').hidden = id === 'signin';
+  $('#sync').hidden = !editing;
+  $('#commitBtn').hidden = !(id === 'board' && !ro);
+  $('#editInfoBtn').hidden = !(id === 'board' && !ro);
+  $('#switchBtn').hidden = t || id === 'teacher';
+  $('#backBtn').hidden = !(t && id !== 'teacher');
+  $('#signoutBtn').hidden = !t;
+  document.body.classList.toggle('readonly', id === 'board' && ro);
+}
+
+function resetToSignin(){
+  clearTimeout(state.saveTimer);
+  Object.assign(state, { email:'', student:null, board:blankBoard(), editing:null, dirty:false, readonly:false, teacher:null });
+  $('#emailIn').value = ''; $('#codeIn').value = ''; $('#codeWrap').hidden = true;
+  $('#signinErr').textContent = ''; $('#signinBtn').textContent = 'Open my board';
+  $('#who').textContent = DEFAULT_WHO;
+  show('signin'); $('#emailIn').focus();
+}
+
+$('#emailIn').addEventListener('input', e => {
+  const v = e.target.value.trim().toLowerCase();
+  const t = isTeacherEmail(v);
+  $('#codeWrap').hidden = !t;
+  $('#signinBtn').textContent = t ? 'Open teacher view' : 'Open my board';
+  $('#signinErr').textContent = (t || !v.includes('@')) ? '' : emailProblem(v);
+});
+
+$('#signinForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#emailIn').value.trim().toLowerCase();
+  if (isTeacherEmail(email)) return teacherSignIn(email);
+  const problem = emailProblem(email);
+  if (problem){ $('#signinErr').textContent = problem; $('#emailIn').focus(); return; }
+  const btn = $('#signinBtn'); btn.disabled = true; btn.textContent = 'Opening…';
+  try{ await openStudent(email); }
+  catch(err){ $('#signinErr').textContent = err.message; }
+  finally{ btn.disabled = false; btn.textContent = 'Open my board'; }
+});
+
+async function openStudent(email){
+  state.email = email; state.readonly = false; state.editing = null;
+  const j = await api('load');
+  state.meta = { periods:j.periods || [], classmates:j.classmates || [], rosterMode:!!j.rosterMode, demo:!!j.demo };
+  state.student = j.student;
+  state.board = j.board || blankBoard();
+  state.dates = j.dates || { start:null, end:null, days:null, status:'Not started' };
+  if (!j.demo && !state.teacher){ try{ localStorage.setItem('cspBoardEmail', email); }catch(_){} }
+  if (infoComplete(state.student)) openBoard(); else openInfo();
+}
+
+function openInfo(){
+  const s = state.student;
+  $('#firstIn').value = s.first || '';
+  $('#lastIn').value = s.last || '';
+  $('#emailOut').value = state.email;
+  const per = $('#periodIn'); per.replaceChildren(el('option', { value:'', text:'Choose your period' }));
+  state.meta.periods.forEach(p => per.append(el('option', { value:p, text:`Period ${p}` })));
+  per.value = s.period || '';
+
+  const wrap = $('#partnerWrap'); wrap.replaceChildren();
+  if (state.meta.rosterMode){
+    const sel = el('select', { id:'partnerIn' },
+      el('option', { value:'', text:'Choose your partner' }),
+      el('option', { value:'none', text:'No partner, working solo' }));
+    const byPeriod = {};
+    state.meta.classmates.forEach(c => (byPeriod[c.period] ||= []).push(c));
+    Object.keys(byPeriod).forEach(p => {
+      sel.append(el('optgroup', { label:`Period ${p}` }, byPeriod[p].map(c => el('option', { value:c.key, text:c.name }))));
+    });
+    sel.value = s.partner || '';
+    wrap.append(el('label', { for:'partnerIn', text:'Partner' }), sel);
+  } else {
+    const solo = s.partner === 'none';
+    const inp = el('input', { id:'partnerIn', type:'email', placeholder:"Partner's school email", value: solo ? '' : (s.partner || ''), disabled: solo });
+    const cb = el('input', { id:'soloIn', type:'checkbox', checked: solo,
+      onchange: e => { inp.disabled = e.target.checked; if (e.target.checked) inp.value = ''; } });
+    wrap.append(el('label', { for:'partnerIn', text:'Partner' }), inp,
+      el('label', { class:'check', for:'soloIn' }, cb, 'No partner, working solo'));
+  }
+  $('#infoErr').textContent = '';
+  show('info');
+  $('#firstIn').focus();
+}
+
+$('#infoForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const first = $('#firstIn').value.trim(), last = $('#lastIn').value.trim(), period = $('#periodIn').value;
+  let partner;
+  if (state.meta.rosterMode) partner = $('#partnerIn').value;
+  else partner = $('#soloIn').checked ? 'none' : $('#partnerIn').value.trim().toLowerCase();
+  const err = m => { $('#infoErr').textContent = m; };
+  if (!first || !last) return err('Enter your first and last name.');
+  if (!period) return err('Choose your class period.');
+  if (!partner) return err('Choose your partner, or pick "No partner, working solo."');
+  if (!state.meta.rosterMode && partner !== 'none'){
+    const p = emailProblem(partner);
+    if (p) return err("Partner's email: " + p);
+    if (partner === state.email) return err("You can't pick yourself as your partner.");
+  }
+  state.student = { ...state.student, first, last, period, partner };
+  const btn = $('#infoBtn'); btn.disabled = true;
+  try{ await saveNow(true); openBoard(); }
+  catch(ex){ err(ex.message); }
+  finally{ btn.disabled = false; }
+});
+
+$('#editInfoBtn').addEventListener('click', openInfo);
+$('#switchBtn').addEventListener('click', () => {
+  if (state.dirty && !confirm('You have unsaved changes. Switch anyway?')) return;
+  try{ localStorage.removeItem('cspBoardEmail'); }catch(_){}
+  resetToSignin();
+});
+$('#signoutBtn').addEventListener('click', () => {
+  if (state.dirty && !confirm('The demo board has unsaved changes. Sign out anyway?')) return;
+  resetToSignin();
+});
+$('#backBtn').addEventListener('click', async () => {
+  if (state.dirty){
+    try{ await saveNow(true); }
+    catch(_){ if (!confirm("Your last changes didn't save. Go back anyway?")) return; }
+  }
+  clearTimeout(state.saveTimer); state.dirty = false;
+  openTeacher();
+  try{ await loadClass(); renderTeacher(); }catch(e){ toast(e.message); }
+});
+
+$('#commitBtn').addEventListener('click', async () => {
+  const b = $('#commitBtn'); b.disabled = true;
+  clearTimeout(state.saveTimer);
+  try{
+    const j = await api('commit', { student:state.student, board:state.board });
+    state.dirty = false; applyServer(j); setSync(API_URL ? 'Saved' : 'Preview');
+    toast(API_URL ? 'Update sent to your teacher.' : 'Preview mode: no email sent.');
+  }catch(e){ toast(e.message); scheduleSave(); }
+  finally{ b.disabled = false; }
+});
+
+$('#finishBtn').addEventListener('click', async () => {
+  if (!confirm('Finish this sprint? Your teacher gets a final snapshot of your board.')) return;
+  const b = $('#finishBtn'); b.disabled = true;
+  clearTimeout(state.saveTimer);
+  try{
+    const j = await api('finish', { student:state.student, board:state.board });
+    state.dirty = false; applyServer(j); setSync(API_URL ? 'Saved' : 'Preview');
+    toast(API_URL ? 'Sprint finished. Your teacher has the snapshot.' : 'Preview mode: sprint finished, no email sent.');
+  }catch(e){ toast(e.message); renderFinish(); }
+});
+
+window.addEventListener('beforeunload', e => { if (state.dirty){ e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------------- Teacher view ---------------- */
+async function teacherSignIn(email){
+  const code = $('#codeIn').value;
+  if (!code){ $('#signinErr').textContent = 'Enter your teacher passcode.'; $('#codeIn').focus(); return; }
+  const btn = $('#signinBtn'); btn.disabled = true; btn.textContent = 'Opening…';
+  state.teacher = { email, code, rows:[], periods:[], demo:null, demoEmail:'',
+    sort:{ key:'period', dir:1 }, filter:{ period:'', status:'', q:'' } };
+  try{
+    await loadClass();
+    $('#codeIn').value = '';
+    openTeacher();
+  }catch(err){
+    state.teacher = null;
+    $('#signinErr').textContent = err.message;
+  }finally{
+    btn.disabled = false; btn.textContent = 'Open teacher view';
+  }
+}
+
+async function loadClass(){
+  const j = await tapi('teacherList');
+  Object.assign(state.teacher, { rows:j.students || [], periods:j.periods || [], demo:j.demo || null, demoEmail:j.demoEmail || PREVIEW_DEMO });
+}
+
+function openTeacher(){
+  Object.assign(state, { readonly:false, email:'', student:null, board:blankBoard(), editing:null, dirty:false });
+  state.meta.demo = false;
+  show('teacher');
+  renderTeacher();
+}
+
+$('#refreshBtn').addEventListener('click', async () => {
+  const b = $('#refreshBtn'); b.disabled = true;
+  try{ await loadClass(); renderTeacher(); toast('Class list updated.'); }
+  catch(e){ toast(e.message); }
+  finally{ b.disabled = false; }
+});
+
+$('#demoOpenBtn').addEventListener('click', async () => {
+  const b = $('#demoOpenBtn'); b.disabled = true;
+  try{ await openStudent(state.teacher.demoEmail); window.scrollTo(0, 0); }
+  catch(e){ toast(e.message); }
+  finally{ b.disabled = false; }
+});
+
+$('#demoResetBtn').addEventListener('click', async () => {
+  if (!confirm('Clear the demo board? Its goals, cards, and dates are deleted so you can start the walkthrough fresh.')) return;
+  try{ await tapi('teacherResetDemo'); await loadClass(); renderTeacher(); toast('Demo board cleared.'); }
+  catch(e){ toast(e.message); }
+});
+
+$('#fPeriod').addEventListener('change', e => { state.teacher.filter.period = e.target.value; renderTable(); });
+$('#fSearch').addEventListener('input', e => { state.teacher.filter.q = e.target.value.trim().toLowerCase(); renderTable(); });
+
+async function viewStudent(email){
+  try{
+    const j = await tapi('teacherBoard', { student:email });
+    Object.assign(state, { readonly:true, email, student:j.student, board:j.board || blankBoard(), dates:j.dates, editing:null, dirty:false });
+    state.meta.demo = false;
+    openBoard();
+    window.scrollTo(0, 0);
+  }catch(e){ toast(e.message); }
+}
+
+function quietDays(r){
+  if (r.status !== 'In progress' || !r.lastUpdated) return 0;
+  const d = daysBetween(new Date(r.lastUpdated), new Date()) - 1;
+  return d >= QUIET_DAYS ? d : 0;
+}
+const statusClass = s => ({ 'Finished':'s-finished', 'In progress':'s-progress', 'Not started':'s-notstarted', 'Not opened':'s-notopened' })[s] || '';
+
+function renderTeacher(){
+  const T = state.teacher, rows = T.rows;
+  $('#who').textContent = `Teacher view, ${rows.length} student${rows.length === 1 ? '' : 's'}`;
+
+  const counts = {}; STATUSES.forEach(s => { counts[s] = 0; });
+  rows.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
+  const chip = (label, value, n) => el('button', { type:'button', class:'chip', 'aria-pressed':String(T.filter.status === value),
+    onclick:() => { T.filter.status = value; renderTeacher(); }, text:`${label} (${n})` });
+  $('#chips').replaceChildren(
+    chip('All', '', rows.length),
+    ...STATUSES.map(s => chip(s, s, counts[s])),
+    chip(`Quiet ${QUIET_DAYS}+ days`, 'quiet', rows.filter(quietDays).length));
+
+  const fp = $('#fPeriod');
+  fp.replaceChildren(el('option', { value:'', text:'All periods' }), ...T.periods.map(p => el('option', { value:p, text:`Period ${p}` })));
+  fp.value = T.filter.period;
+
+  const d = T.demo;
+  $('#demoInfo').textContent = d
+    ? `Demo board (${T.demoEmail}): ${d.status.toLowerCase()}, ${d.cardsDone} of ${d.cardsTotal} cards done.`
+    : `Demo board (${T.demoEmail}): empty and ready for a walkthrough.`;
+  $('#demoResetBtn').disabled = !d;
+  renderTable();
+}
+
+const T_COLS = [
+  { key:'name', label:'Student' }, { key:'period', label:'Period' }, { key:'partner', label:'Partner' },
+  { key:'status', label:'Status' }, { key:'start', label:'Started' }, { key:'end', label:'Finished' },
+  { key:'days', label:'Days' }, { key:'cards', label:'Cards done' }, { key:'cpt', label:'Create PT' },
+  { key:'retro', label:'Retro' }, { key:'lastUpdated', label:'Last update' }
+];
+function sortVal(r, k){
+  switch (k){
+    case 'name':   return `${r.last} ${r.first}`.trim().toLowerCase() || r.email;
+    case 'status': return STATUSES.indexOf(r.status);
+    case 'cards':  return r.cardsTotal ? r.cardsDone / r.cardsTotal : null;
+    case 'cpt':    return r.opened ? r.cpt : null;
+    case 'retro':  return r.retroTotal ? r.retroDone / r.retroTotal : null;
+    default:       return r[k];
+  }
+}
+function cmp(a, b){
+  const ea = a === '' || a == null, eb = b === '' || b == null;
+  if (ea || eb) return ea === eb ? 0 : ea ? 1 : -1;
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  return String(a).localeCompare(String(b), undefined, { numeric:true });
+}
+
+function renderTable(){
+  const T = state.teacher, f = T.filter;
+  $('#tHead').replaceChildren(...T_COLS.map(c => {
+    const on = T.sort.key === c.key;
+    return el('th', { scope:'col', 'aria-sort': on ? (T.sort.dir > 0 ? 'ascending' : 'descending') : 'none' },
+      el('button', { type:'button', text:c.label, onclick:() => {
+        T.sort = { key:c.key, dir: on ? -T.sort.dir : 1 }; renderTable();
+      } }));
+  }), el('th', { scope:'col' }, el('span', { class:'sub', text:'Board' })));
+
+  const rows = T.rows.filter(r =>
+    (!f.period || r.period === f.period) &&
+    (!f.status || (f.status === 'quiet' ? quietDays(r) : r.status === f.status)) &&
+    (!f.q || `${r.first} ${r.last} ${r.email}`.toLowerCase().includes(f.q)));
+  rows.sort((a, b) => T.sort.dir * cmp(sortVal(a, T.sort.key), sortVal(b, T.sort.key))
+    || cmp(sortVal(a, 'period'), sortVal(b, 'period')) || cmp(sortVal(a, 'name'), sortVal(b, 'name')));
+
+  $('#tCount').textContent = `Showing ${rows.length} of ${T.rows.length}`;
+  const body = $('#tBody');
+  if (!T.rows.length){
+    body.replaceChildren(el('tr', {}, el('td', { colspan:String(T_COLS.length + 1),
+      text:'No students yet. Paste both classes into the Roster tab, or wait for students to open their boards.' })));
+    return;
+  }
+  if (!rows.length){
+    body.replaceChildren(el('tr', {}, el('td', { colspan:String(T_COLS.length + 1), text:'No students match these filters.' })));
+    return;
+  }
+  body.replaceChildren(...rows.map(r => {
+    const q = quietDays(r);
+    const name = `${r.first} ${r.last}`.trim();
+    return el('tr', {},
+      el('td', {}, el('strong', { text: name || r.email }), name ? el('span', { class:'sub', text:r.email }) : null),
+      el('td', { text: r.period || '—' }),
+      el('td', { text: r.partner || '—' }),
+      el('td', {}, el('span', { class:'badge ' + statusClass(r.status), text:r.status }),
+        q ? el('span', { class:'quiet', text:`No updates in ${q} days` }) : null),
+      el('td', { class:'num', text: fmtShort(r.start) }),
+      el('td', { class:'num', text: fmtShort(r.end) }),
+      el('td', { class:'num', text: r.days == null ? '—' : String(r.days) }),
+      el('td', { class:'num', text: r.cardsTotal ? `${r.cardsDone} of ${r.cardsTotal}` : '—' }),
+      el('td', { class:'num', text: r.opened ? `${r.cpt} of ${REQS.length}` : '—' }),
+      el('td', { class:'num', text: r.retroTotal ? `${r.retroDone} of ${r.retroTotal}` : (r.opened ? 'None yet' : '—') }),
+      el('td', { class:'num', text: r.lastUpdated ? fmtShort(r.lastUpdated) : '—' }),
+      el('td', {}, el('button', { type:'button', class:'ghost small', disabled: !r.opened,
+        'aria-label': `View ${name || r.email}'s board`, text:'View', onclick:() => viewStudent(r.email) })));
+  }));
+}
+
+/* ---------------- Board ---------------- */
+function openBoard(){
+  $('#sprintIn').value = state.board.sprint || 'Sprint 1';
+  $('#sprintIn').readOnly = state.readonly;
+  const ban = $('#boardBanner');
+  if (state.readonly){
+    ban.hidden = false;
+    ban.textContent = 'Read-only view of this student\'s board. Only the student can make changes.';
+  } else if (state.meta.demo){
+    ban.hidden = false;
+    ban.textContent = 'Demo board for class walkthroughs. Updates go to the teacher only, and this board is never included in review groups or the Canvas export.';
+  } else {
+    ban.hidden = true;
+  }
+  show('board');
+  renderBoard(); renderHeader(); renderDates();
+  if (!state.readonly) setSync(API_URL ? 'Saved' : 'Preview');
+}
+
+$('#sprintIn').addEventListener('input', e => { if (state.readonly) return; state.board.sprint = e.target.value; scheduleSave(); });
+
+$('#goalForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const text = $('#goalIn').value.trim();
+  if (!text) return;
+  mutate(b => {
+    const color = PALETTE.find(c => !b.goals.some(g => g.color === c)) || PALETTE[0];
+    const g = { id:uid(), text, color };
+    b.goals.push(g);
+    b.cards.push({ id:uid(), text, goalId:g.id, req:'', col:'pick', seed:true });
+  });
+  $('#goalIn').value = ''; $('#goalIn').focus();
+});
+
+function removeGoal(g){
+  if (!confirm(`Remove the goal "${g.text}"? Its starter card goes too. Other cards stay without a color.`)) return;
+  mutate(b => {
+    b.goals = b.goals.filter(x => x.id !== g.id);
+    b.cards = b.cards.filter(c => !(c.seed && c.goalId === g.id && c.col === 'pick'));
+    b.cards.forEach(c => { if (c.goalId === g.id) c.goalId = ''; });
+  });
+}
+
+$('#retroForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const text = $('#retroIn').value.trim(); if (!text) return;
+  mutate(b => b.retro.push({ id:uid(), text, done:false }));
+  $('#retroIn').value = '';
+});
+
+$('#assetType').replaceChildren(...ASSET_TYPES.map(t => el('option', { value:t, text:t })));
+$('#assetForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const desc = $('#assetDesc').value.trim(), source = $('#assetSrc').value.trim();
+  if (!desc){ $('#assetDesc').focus(); return; }
+  mutate(b => b.assets.push({ id:uid(), type:$('#assetType').value, desc, source }));
+  $('#assetDesc').value = ''; $('#assetSrc').value = '';
+});
+
+const goalOf = id => state.board.goals.find(g => g.id === id);
+const reqOf = id => REQS.find(r => r.id === id);
+function tilt(id){ let h = 0; for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return ((h % 17) - 8) / 10; }
+
+function moveCardTo(id, colId){
+  mutate(b => {
+    const i = b.cards.findIndex(c => c.id === id);
+    if (i < 0) return;
+    const [c] = b.cards.splice(i, 1);
+    c.col = colId; b.cards.push(c);
+  });
+}
+
+// Build the six columns once; cards are re-rendered into them.
+(function buildFlow(){
+  const flow = $('#flow');
+  COLUMNS.forEach(col => {
+    const colEl = el('section', { class:'col' + (col.id === 'done' ? ' done-col' : ''), 'aria-label':col.name },
+      el('div', { class:'col-head' }, el('h2', { text:col.name }), el('span', { class:'count', id:`count-${col.id}` })),
+      el('p', { class:'col-sub', text:col.sub }),
+      el('ul', { class:'cards', id:`list-${col.id}` }));
+    colEl.addEventListener('dragover', e => { if (state.readonly) return; e.preventDefault(); colEl.classList.add('over'); });
+    colEl.addEventListener('dragleave', e => { if (!colEl.contains(e.relatedTarget)) colEl.classList.remove('over'); });
+    colEl.addEventListener('drop', e => {
+      e.preventDefault(); colEl.classList.remove('over');
+      const id = e.dataTransfer.getData('text/plain'); if (id) moveCardTo(id, col.id);
+    });
+    if (col.id === 'pick'){
+      const form = el('form', { class:'add-card' },
+        el('input', { id:'cardIn', type:'text', maxlength:'200', placeholder:'New card', 'aria-label':'New card text' }),
+        el('select', { id:'cardGoal', 'aria-label':'Goal for this card' }),
+        el('select', { id:'cardReq', 'aria-label':'Create PT requirement' },
+          el('option', { value:'', text:'No Create PT tag' }),
+          REQS.map(r => el('option', { value:r.id, text:r.short }))),
+        el('button', { type:'submit', id:'cardBtn', text:'Add card' }));
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const text = $('#cardIn').value.trim(), goalId = $('#cardGoal').value;
+        if (!text || !goalId) return;
+        mutate(b => b.cards.push({ id:uid(), text, goalId, req:$('#cardReq').value, col:'pick', seed:false }));
+        $('#cardIn').value = ''; $('#cardReq').value = ''; $('#cardIn').focus();
+      });
+      colEl.append(form);
+    }
+    flow.append(colEl);
+  });
+})();
+
+function renderBoard(){ renderGoals(); renderCardForm(); renderColumns(); renderRetro(); renderOutcomes(); renderAssets(); renderFinish(); }
+
+function renderHeader(){
+  const s = state.student; if (!s || !s.first) return;
+  const partner = s.partner === 'none' ? 'working solo' : (s.partnerName ? `partner: ${s.partnerName}` : 'partner chosen');
+  $('#who').textContent = `${state.readonly ? 'Viewing ' : ''}${s.first} ${s.last}, Period ${s.period}, ${partner}`;
+}
+
+function renderDates(){
+  const d = state.dates;
+  $('#dates').replaceChildren(
+    el('dt', { text:'Started' }),  el('dd', { text: d.start ? fmtDate(d.start) : 'When you add your first goal' }),
+    el('dt', { text:'Finished' }), el('dd', { text: d.end ? fmtDate(d.end) : 'Not yet' }),
+    el('dt', { text:'Days' }),     el('dd', { text: d.days == null ? '—' : String(d.days) }));
+}
+
+function renderGoals(){
+  const b = state.board, list = $('#goalList');
+  list.replaceChildren(...b.goals.map(g => el('li', { class:'goal' },
+    el('span', { class:'swatch', style:`--c:${g.color}`, 'aria-hidden':'true' }),
+    el('span', { class:'goal-text', text:g.text }),
+    el('button', { class:'icon', type:'button', 'aria-label':`Remove goal: ${g.text}`, onclick:() => removeGoal(g), text:'✕' }))));
+  if (!b.goals.length) list.append(el('li', { class:'empty', text: state.readonly ? 'No goals yet.' : 'No goals yet. Start with one or two.' }));
+  const full = b.goals.length >= PALETTE.length;
+  $('#goalForm').hidden = full;
+  $('#goalHint').hidden = state.readonly;
+  $('#goalHint').textContent = full ? 'Six goals is the limit for one sprint.' :
+    'Each goal gets its own color and a starter card in Pick Me. Break it into smaller cards from there.';
+}
+
+function renderCardForm(){
+  const sel = $('#cardGoal'), prev = sel.value, goals = state.board.goals;
+  if (!goals.length){
+    sel.replaceChildren(el('option', { value:'', text:'Add a Sprint Goal first' }));
+    $('#cardIn').disabled = sel.disabled = $('#cardReq').disabled = $('#cardBtn').disabled = true;
+    return;
+  }
+  $('#cardIn').disabled = sel.disabled = $('#cardReq').disabled = $('#cardBtn').disabled = false;
+  sel.replaceChildren(...goals.map(g => el('option', { value:g.id, text:'Goal: ' + g.text })));
+  sel.value = goals.some(g => g.id === prev) ? prev : goals[0].id;
+}
+
+function renderColumns(){
+  COLUMNS.forEach((col, ci) => {
+    const list = $(`#list-${col.id}`);
+    const cards = state.board.cards.filter(c => c.col === col.id);
+    $(`#count-${col.id}`).textContent = cards.length;
+    list.replaceChildren(...cards.map(c => cardEl(c, ci)));
+    if (!cards.length) list.append(el('li', { class:'empty', text: state.readonly ? 'No cards here.' : col.empty }));
+  });
+}
+
+function cardEl(c, ci){
+  const g = goalOf(c.goalId), r = reqOf(c.req);
+  const li = el('li', { class:'note', draggable: state.readonly ? 'false' : 'true', style:`--c:${g ? g.color : 'var(--untagged)'};--tilt:${tilt(c.id)}deg` });
+  if (!state.readonly){
+    li.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.id); li.classList.add('dragging'); });
+    li.addEventListener('dragend', () => li.classList.remove('dragging'));
+  }
+  li.append(el('p', { class:'note-text', text:c.text }));
+  const meta = el('div', { class:'note-meta' });
+  if (r) meta.append(el('span', { class:'tag', title:r.label, text:r.short }));
+  if (!g) meta.append(el('span', { class:'tag', text:'No goal' }));
+  li.append(meta);
+  if (state.readonly) return li;
+  const editing = state.editing === c.id;
+  li.append(el('div', { class:'note-ctrl' },
+    el('button', { class:'icon', type:'button', 'aria-label':`Move "${c.text}" to ${ci > 0 ? COLUMNS[ci-1].name : ''}`, disabled: ci === 0, onclick:() => moveCardTo(c.id, COLUMNS[ci-1].id), text:'◀' }),
+    el('button', { class:'icon', type:'button', 'aria-expanded':String(editing), onclick:() => { state.editing = editing ? null : c.id; renderColumns(); }, text: editing ? 'Close' : 'Edit' }),
+    el('button', { class:'icon', type:'button', 'aria-label':`Move "${c.text}" to ${ci < COLUMNS.length-1 ? COLUMNS[ci+1].name : ''}`, disabled: ci === COLUMNS.length - 1, onclick:() => moveCardTo(c.id, COLUMNS[ci+1].id), text:'▶' })));
+  if (editing) li.append(editPanel(c));
+  return li;
+}
+
+function editPanel(c){
+  const idT = 't-' + c.id, idG = 'g-' + c.id, idR = 'r-' + c.id;
+  const upd = fn => mutate(b => { const x = b.cards.find(k => k.id === c.id); if (x) fn(x); });
+  return el('div', { class:'note-edit' },
+    el('label', { for:idT, text:'Card text' }),
+    el('textarea', { id:idT, maxlength:'200', onchange:e => { const v = e.target.value.trim(); if (v) upd(x => { x.text = v; }); } }, c.text),
+    el('label', { for:idG, text:'Goal' }),
+    el('select', { id:idG, onchange:e => upd(x => { x.goalId = e.target.value; }) },
+      el('option', { value:'', text:'No goal' }),
+      state.board.goals.map(g => el('option', { value:g.id, text:g.text, selected: g.id === c.goalId }))),
+    el('label', { for:idR, text:'Create PT tag' }),
+    el('select', { id:idR, onchange:e => upd(x => { x.req = e.target.value; }) },
+      el('option', { value:'', text:'None' }),
+      REQS.map(r => el('option', { value:r.id, text:r.short, selected: r.id === c.req }))),
+    el('button', { class:'del', type:'button', text:'Delete card', onclick:() => {
+      if (!confirm(`Delete "${c.text}"?`)) return;
+      state.editing = null;
+      mutate(b => { b.cards = b.cards.filter(k => k.id !== c.id); });
+    } }));
+}
+
+function renderRetro(){
+  const list = $('#retroList'), items = state.board.retro;
+  list.replaceChildren(...items.map(r => el('li', { class:'retro-item' + (r.done ? ' done' : '') },
+    el('label', {},
+      el('input', { type:'checkbox', checked:r.done, disabled:state.readonly, onchange:e => mutate(b => { const x = b.retro.find(k => k.id === r.id); if (x) x.done = e.target.checked; }) }),
+      el('span', { text:r.text })),
+    el('button', { class:'icon', type:'button', 'aria-label':`Remove: ${r.text}`, text:'✕', onclick:() => mutate(b => { b.retro = b.retro.filter(k => k.id !== r.id); }) }))));
+  if (!items.length) list.append(el('li', { class:'empty', text: state.readonly ? 'No retro actions yet.' : "After each check-in, add one thing you'll change. Check it off when you've done it." }));
+}
+
+function renderOutcomes(){
+  const b = state.board;
+  const done = b.cards.filter(c => c.col === 'done').length;
+  $('#overall').textContent = b.cards.length ? `${done} of ${b.cards.length} cards done` : 'No cards yet';
+  $('#goalProgress').replaceChildren(...b.goals.map(g => {
+    const cs = b.cards.filter(c => c.goalId === g.id), dn = cs.filter(c => c.col === 'done').length;
+    const pct = cs.length ? Math.round(dn / cs.length * 100) : 0;
+    return el('div', { class:'gp' },
+      el('span', { class:'swatch', style:`--c:${g.color}`, 'aria-hidden':'true' }),
+      el('span', { class:'gp-text', text:g.text }),
+      el('span', { class:'gp-num', text: cs.length ? `${dn} of ${cs.length}` : 'No cards' }),
+      el('div', { class:'bar', role:'progressbar', 'aria-valuemin':'0', 'aria-valuemax':'100', 'aria-valuenow':String(pct), 'aria-label':`${g.text} progress` },
+        el('span', { style:`width:${pct}%;--c:${g.color}` })));
+  }));
+  $('#reqList').replaceChildren(...REQS.map(r => {
+    const tagged = b.cards.filter(c => c.req === r.id);
+    const met = tagged.some(c => c.col === 'done');
+    const cls = met ? 'met' : tagged.length ? 'prog' : '';
+    return el('li', { class:'req ' + cls },
+      el('span', { class:'mark', 'aria-hidden':'true', text: met ? '✓' : tagged.length ? '…' : '' }),
+      el('span', { text:r.label }),
+      el('span', { class:'state', text: met ? 'Done' : tagged.length ? 'In progress' : 'Not planned yet' }));
+  }));
+}
+
+function renderAssets(){
+  const list = $('#assetList'), items = state.board.assets;
+  list.replaceChildren(...items.map(a => {
+    const src = a.source ? (/^https?:\/\//i.test(a.source)
+      ? el('a', { href:a.source, target:'_blank', rel:'noopener noreferrer', text:a.source })
+      : a.source) : el('em', { text:'No source yet. Add where this came from.' });
+    return el('li', { class:'asset' },
+      el('span', { class:'tag', text:a.type }),
+      el('strong', { text:a.desc }),
+      el('button', { class:'icon', type:'button', 'aria-label':`Remove asset: ${a.desc}`, text:'✕', onclick:() => mutate(b => { b.assets = b.assets.filter(k => k.id !== a.id); }) }),
+      el('span', { class:'asset-src' }, src));
+  }));
+  if (!items.length) list.append(el('li', { class:'empty', text: state.readonly ? 'No assets logged.' : "Nothing logged yet. If you wrote and drew everything yourself, you're all set." }));
+}
+
+function renderFinish(){
+  if (!state.student) return;
+  const reasons = finishReasons(state.board, state.student);
+  const btn = $('#finishBtn'), msg = $('#doneMsg');
+  if (state.dates.end){
+    msg.hidden = false;
+    msg.textContent = `Sprint finished on ${fmtShort(state.dates.end)}. Moving a card out of Done reopens it.`;
+    btn.textContent = 'Sprint finished'; btn.disabled = true;
+    $('#finishReasons').replaceChildren();
+    return;
+  }
+  msg.hidden = true;
+  btn.textContent = 'Finish sprint';
+  btn.disabled = reasons.length > 0;
+  $('#finishReasons').replaceChildren(...reasons.map(r => el('li', { text:r })));
+}
+
+/* ---------------- Start ---------------- */
+$('#previewNote').hidden = !!API_URL;
+try{ const saved = localStorage.getItem('cspBoardEmail'); if (saved) $('#emailIn').value = saved; }catch(_){}
+</script>
+</body>
+</html>
